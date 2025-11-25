@@ -1,0 +1,16 @@
+[project]
+name = "ultraflux"
+description = "UltraFlux:Data-Model Co-Design for High-quality Native 4K Text-to-Image Generation across Diverse Aspect Ratios,try it in comfyUI"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["torch", "transformers", "accelerate", "diffusers"]
+
+[project.urls]
+Repository = "https://github.com/smthemex/ComfyUI_UltraFlux"
+#  Used by Comfy Registry https://registry.comfy.org
+
+[tool.comfy]
+PublisherId = "smthemex"
+DisplayName = "ComfyUI_UltraFlux"
+Icon = ""
+includes = []

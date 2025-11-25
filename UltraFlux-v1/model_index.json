@@ -1,0 +1,29 @@
+{
+  "_class_name": "FluxPipeline",
+  "_diffusers_version": "0.30.3",
+  "_name_or_path": "./pretrain/FLUX.1-dev",
+  "scheduler": [
+    "diffusers",
+    "FlowMatchEulerDiscreteScheduler"
+  ],
+  "text_encoder": [
+    "transformers",
+    "CLIPTextModel"
+  ],
+  "text_encoder_2": [
+    "transformers",
+    "T5EncoderModel"
+  ],
+  "tokenizer": [
+    "transformers",
+    "CLIPTokenizer"
+  ],
+  "tokenizer_2": [
+    "transformers",
+    "T5TokenizerFast"
+  ],
+  "transformer": [
+    "diffusers",
+    "FluxTransformer2DModel"
+  ]
+}

@@ -1,8 +1,9 @@
 # ComfyUI_UltraFlux
 [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux):Data-Model Co-Design for High-quality Native 4K Text-to-Image Generation across Diverse Aspect Ratios,try it in comfyUI
 
-
-# Coming soon
+# Update
+* 因为基于flux ，如果出现人物，推荐使用修手lora，风格lora因为微调图片精度不够，可能会劣化输出，8G显存block number适当从10下调，4G显存，你就从1开始往上测试吧
+* Because based on flux, if a character appears, it is recommended to use a hand fix Lora. The style Lora may degrade the output due to insufficient fine-tuning of the image accuracy. The block number of 8GB VRAM should be appropriately reduced from 10, and 4G VRAM should be tested from 1 onwards
 
 
 1.Installation  
@@ -12,24 +13,23 @@
 git clone https://github.com/smthemex/ComfyUI_UltraFlux
 
 ```
-
 2.requirements  
 ----
+* 不装也行，没什么需求
 ```
 pip install -r requirements.txt
 ```
-
 3.Model
 ----
 
-* gguf [links](https://huggingface.co/smthem/UltraFlux-v1-gguf/tree/main) optional/备选
-* vae ranmae it  [v1](https://huggingface.co/Owen777/UltraFlux-v1) 
-* diffuser transformer   [v1](https://huggingface.co/Owen777/UltraFlux-v1) or [v1.1](https://huggingface.co/Owen777/UltraFlux-v1-1-Transformer) optional/备选 填repo
+* gguf [links](https://huggingface.co/smthem/UltraFlux-v1-gguf/tree/main) optional/备选  
+* vae rnamae it  [v1](https://huggingface.co/Owen777/UltraFlux-v1)   
+* diffusers transformer   [v1](https://huggingface.co/Owen777/UltraFlux-v1) or [v1.1](https://huggingface.co/Owen777/UltraFlux-v1-1-Transformer) optional/备选 填repo的方式，一般不用    
 * comfyUI normal T5 and clip-l 
-* lora, anyturbo and style flux lora #任意flux加速和风格lora
+* lora, any turbo and style flux lora #任意flux加速和风格lora，部分Lora的精度不够 可能会劣化输出  
 ```
 ├── ComfyUI/models/gguf # or fp8 
-|     ├── UltraFlux-v1-1-BF16.gguf # or Q8
+|     ├── UltraFlux-v1-1-BF16.gguf # or Q8 
 ├── ComfyUI/models/vae
 |        ├─diffusion_pytorch_model.safetensors  # rename it 换个名字
 ├── ComfyUI/models/clip
