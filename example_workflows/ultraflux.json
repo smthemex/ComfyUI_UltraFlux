@@ -1,15 +1,15 @@
 {
   "id": "39eb06b3-d88b-46a3-a0e5-603e052723a3",
   "revision": 0,
-  "last_node_id": 9,
-  "last_link_id": 12,
+  "last_node_id": 31,
+  "last_link_id": 28,
   "nodes": [
     {
-      "id": 4,
-      "type": "DualCLIPLoader",
+      "id": 6,
+      "type": "UltraFlux_SM_Model",
       "pos": [
-        1245.821920943883,
-        497.4691057481418
+        1579.712502440886,
+        375.08024711059437
       ],
       "size": [
         270,
@@ -17,6 +17,40 @@
       ],
       "flags": {},
       "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "pipeline",
+          "type": "UltraFlux_SM_Model",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UltraFlux_SM_Model"
+      },
+      "widgets_values": [
+        "none",
+        "none",
+        "UltraFlux.safetensors",
+        "F:\\test\\ComfyUI\\models\\diffusers\\UltraFlux-v1"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "DualCLIPLoader",
+      "pos": [
+        1168.7751014149553,
+        385.8387980811227
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -39,131 +73,18 @@
       ]
     },
     {
-      "id": 7,
-      "type": "SaveImage",
-      "pos": [
-        2277.5406598835834,
-        364.8114273960501
-      ],
-      "size": [
-        754.6906031403332,
-        849.0524779340745
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 12
-        }
-      ],
-      "outputs": [],
-      "properties": {},
-      "widgets_values": [
-        "ComfyUI"
-      ]
-    },
-    {
-      "id": 6,
-      "type": "UltraFlux_SM_Model",
-      "pos": [
-        1560.013037089271,
-        469.1999165715889
-      ],
-      "size": [
-        270,
-        130
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "pipeline",
-          "type": "UltraFlux_SM_Model",
-          "links": [
-            10
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "UltraFlux_SM_Model"
-      },
-      "widgets_values": [
-        "none",
-        "UltraFlux-v1-1-BF16.gguf",
-        "UltraFlux.safetensors",
-        ""
-      ]
-    },
-    {
-      "id": 9,
-      "type": "UltraFlux_SM_KSampler",
-      "pos": [
-        1951.116818858669,
-        543.1592057194864
-      ],
-      "size": [
-        270,
-        318
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pipeline",
-          "type": "UltraFlux_SM_Model",
-          "link": 10
-        },
-        {
-          "name": "cond",
-          "type": "CONDITIONING",
-          "link": 11
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            12
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "UltraFlux_SM_KSampler"
-      },
-      "widgets_values": [
-        "FLUX\\flux-turbo.safetensors",
-        "FLUX\\srpo_128_base_RockerBOO_model_fp16.safetensors",
-        1,
-        1,
-        4096,
-        4096,
-        10,
-        4,
-        1759605249,
-        "randomize",
-        10
-      ]
-    },
-    {
       "id": 3,
       "type": "CLIPTextEncode",
       "pos": [
-        1364.8802479918027,
-        686.0741286801183
+        1261.567481674488,
+        586.372917985034
       ],
       "size": [
-        526.613997152399,
-        225.3019521374739
+        542.2641426550258,
+        345.0806684597884
       ],
       "flags": {},
-      "order": 2,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -185,7 +106,465 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "Product photography, 45-degree front angle (60mm macro lens, f/8.0 aperture), soft diffused studio light. A GANGFU brand irregular soda biscuit stand-up pouch: blue top section (matte plastic, white \"GANGFU\" bold logo + Chinese \"港福\" mark), yellow bottom section. Front displays: golden irregular soda biscuits (crisp texture, tiny air holes), pink-white marbled ham slices (fat-muscle gradient), dark gray rough-textured black truffle; text elements: blue label with \"Soda Biscuits\" (handwritten-style English) + \"不规则苏打饼干\" (bold Chinese font), \"0.3% salt content\" \"0% added sucrose\" (small print), \"慢发酵才够味\" (handwritten Chinese font), \"net weight: 80g\" (bottom right). Packaging material: Matte plastic stand-up pouch with subtle edge gloss. Lighting: Soft studio light balances color contrast (blue/yellow), highlights biscuit crispness, ham marbling, truffle pores; no harsh reflections, gentle shadow on pouch folds. Details: Pouch seal (blue top edge), text font layers, content texture (biscuit holes, ham fat lines, truffle pores), light (neutral product gradient, shadow depth)."
+        "This is a realistic portrait photography work full of artistic sense, using a medium shot composition, focusing on the back and profile of a young woman. The background of the picture is a soft gray and white color tone, simple and layered, making the main character more prominent. The light slanted from the upper left corner, creating delicate transitions of light and shadow on the character's shoulder blades, neck, and arms, creating a three-dimensional and soft light and shadow effect, while outlining a soft halo at the edge of the hair.\n\nThe character faces away from the camera, slightly tilting their head and looking up to the right, with a calm and slightly contemplative expression. She has extremely short silver white straight hair, with the ends naturally falling behind her neck. The hair is light and textured, and some of it gently brushes against her cheeks with her movements. Her skin is fair and smooth, with smooth shoulder lines, and the contours of her collarbones and vertebrae are clearly visible in light and shadow, displaying an elegant yet fragile beauty.\nShe lifted her right hand and lightly touched the tip of her nose with her index finger, her posture lazy and expressive, as if she was thinking or feeling some emotion. With his left hand, he gently stroked a bright red fabric - possibly a dress skirt or shawl - which was soft in texture, naturally wrinkled, and had extremely high color saturation. It formed a strong visual contrast with the cool background and skin tone of the characters, becoming the most eye-catching color focus in the picture.\nThe entire photo is rich in color: with a cool gray tone as the main tone, it highlights the warm whiteness of the character's skin and the fiery red fabric; The composition is compact yet not oppressive, conveying a dynamic beauty in tranquility through the curves of the characters' bodies and the fluidity of the fabric. There are no unnecessary decorations or environmental elements, relying solely on the combination of light, shadow, color, posture, and material to present a sophisticated, restrained, and emotionally charged visual language."
+      ]
+    },
+    {
+      "id": 14,
+      "type": "VAEEncode",
+      "pos": [
+        1839.7567432861638,
+        756.3665609756351
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 19
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 16,
+      "type": "ImageScale",
+      "pos": [
+        1643.5674923832314,
+        1019.3293043168903
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        512,
+        512,
+        "disabled"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [
+        3927.559268653269,
+        377.4900535551667
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "SaveImage",
+      "pos": [
+        3143.7936669886553,
+        1310.5162779550521
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340747
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "SaveImage",
+      "pos": [
+        3130.893701441209,
+        382.43468310152775
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "SaveImage",
+      "pos": [
+        2355.56216974353,
+        1318.5517130145643
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 28,
+      "type": "SaveImage",
+      "pos": [
+        2343.1127674746435,
+        377.4063337124337
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "SaveImage",
+      "pos": [
+        3922.5935078570747,
+        -549.7748555768723
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "SaveImage",
+      "pos": [
+        2351.116531132885,
+        -551.8091548786848
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 28
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "SaveImage",
+      "pos": [
+        3138.3522911201144,
+        -569.7120223829304
+      ],
+      "size": [
+        754.6906031403332,
+        849.0524779340745
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAELoader",
+      "pos": [
+        1344.205985305033,
+        1018.4791457139261
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "LoadImage",
+      "pos": [
+        1996.321852384996,
+        901.0587462129881
+      ],
+      "size": [
+        270,
+        314.0000000000001
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "18a34483-f7cf-456e-9bee-543deda73f7e.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "UltraFlux_SM_KSampler",
+      "pos": [
+        2002.673102079124,
+        495.54381225
+      ],
+      "size": [
+        270,
+        362
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pipeline",
+          "type": "UltraFlux_SM_Model",
+          "link": 10
+        },
+        {
+          "name": "cond",
+          "type": "CONDITIONING",
+          "link": 11
+        },
+        {
+          "name": "latent",
+          "shape": 7,
+          "type": "LATENT",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UltraFlux_SM_KSampler"
+      },
+      "widgets_values": [
+        "FLUX\\flux-turbo.safetensors",
+        "none",
+        1,
+        1,
+        4096,
+        4096,
+        8,
+        4,
+        120910301,
+        "randomize",
+        10,
+        0.55
+      ]
+    },
+    {
+      "id": 24,
+      "type": "LoadImage",
+      "pos": [
+        3919.7393417519665,
+        1332.9040730170882
+      ],
+      "size": [
+        791.9421025828833,
+        834.2390381611727
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "ComfyUI_00069_.png",
+        "image"
       ]
     }
   ],
@@ -215,10 +594,42 @@
       "CONDITIONING"
     ],
     [
+      15,
       12,
+      0,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      16,
+      14,
+      0,
+      9,
+      2,
+      "LATENT"
+    ],
+    [
+      18,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      16,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
       9,
       0,
-      7,
+      31,
       0,
       "IMAGE"
     ]
@@ -227,10 +638,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.7627768444385489,
+      "scale": 0.6293402285190667,
       "offset": [
-        -919.6467544101276,
-        -144.66585844864625
+        -840.6540081518358,
+        -110.4642352249578
       ]
     },
     "frontendVersion": "1.28.8",
