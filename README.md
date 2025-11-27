@@ -2,7 +2,7 @@
 [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux):Data-Model Co-Design for High-quality Native 4K Text-to-Image Generation across Diverse Aspect Ratios,try it in comfyUI
 
 # Update
-* 图生图在试其他途径,不一定有效
+* 图生图模式上线，加噪伪超分 / i2i is done。
 * 因为基于flux ，如果出现人物，推荐使用修手lora，风格lora因为微调图片精度不够，可能会劣化输出，8G显存block number适当从10下调，4G显存，你就从1开始往上测试吧
 * Because based on flux, if a character appears, it is recommended to use a hand fix Lora. The style Lora may degrade the output due to insufficient fine-tuning of the image accuracy. The block number of 8GB VRAM should be appropriately reduced from 10, and 4G VRAM should be tested from 1 onwards
 
@@ -14,7 +14,7 @@
 git clone https://github.com/smthemex/ComfyUI_UltraFlux
 
 ```
-2.requirements  
+2.requirements  i
 ----
 * 不装也行，没什么需求
 ```
@@ -46,6 +46,8 @@ pip install -r requirements.txt
 
 4.Example
 ----
+![](https://github.com/smthemex/ComfyUI_UltraFlux/blob/main/example_workflows/example_i.png)
+
 ![](https://github.com/smthemex/ComfyUI_UltraFlux/blob/main/example_workflows/example.png)
 
 5.Citation
