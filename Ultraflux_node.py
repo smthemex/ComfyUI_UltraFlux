@@ -80,13 +80,15 @@ class UltraFlux_SM_KSampler(io.ComfyNode):
                 io.Float.Input("guidance_scale", default=4.0, min=0, max=20,step=0.01,display_mode=io.NumberDisplay.number),
                 io.Int.Input("seed", default=0, min=0, max=MAX_SEED,display_mode=io.NumberDisplay.number),
                 io.Int.Input("block_num", default=10, min=1, max=MAX_SEED,display_mode=io.NumberDisplay.number),
-            ], # io.Float.Input("noise", default=0.0, min=0.0, max=1.0,step=0.01,display_mode=io.NumberDisplay.number),
+                io.Float.Input("noise", default=0.1, min=0.1, max=1.0,step=0.01,display_mode=io.NumberDisplay.number),
+                io.Latent.Input("latent",optional=True),
+            ], 
             outputs=[
                 io.Image.Output(display_name="image"),
             ],
         )
     @classmethod
-    def execute(cls, pipeline,lora1,lora2,lora_scale1,lora_scale2,cond,width,height,steps,guidance_scale,seed,block_num,) -> io.NodeOutput:
+    def execute(cls, pipeline,lora1,lora2,lora_scale1,lora_scale2,cond,width,height,steps,guidance_scale,seed,block_num,noise,latent=None) -> io.NodeOutput:
 
         cf_models=mm.loaded_models()
         try:
@@ -145,7 +147,7 @@ class UltraFlux_SM_KSampler(io.ComfyNode):
         # apply offloading
         apply_group_offloading(pipeline.transformer, onload_device=torch.device("cuda"), offload_type="block_level", num_blocks_per_group=block_num)
         # infer
-        image=inference(pipeline,cond,guidance_scale,steps,seed,width,height)
+        image=inference(pipeline,cond,guidance_scale,steps,seed,width,height,latent,noise)
  
         return io.NodeOutput(phi2narry(image))
 
