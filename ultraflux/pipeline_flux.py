@@ -64,6 +64,78 @@ def calculate_shift(
     mu = image_seq_len * m + b
     return mu
 
+def calculate_shift_(
+    image_seq_len,
+    base_seq_len: int = 256,
+    max_seq_len: int = 4096,
+    base_shift: float = 0.5,
+    max_shift: float = 1.15,
+):
+    m = (max_shift - base_shift) / (max_seq_len - base_seq_len)
+    b = base_shift - m * base_seq_len
+    mu = image_seq_len * m + b
+    return mu
+
+
+def retrieve_timesteps_(
+        scheduler,
+        num_inference_steps: Optional[int] = None,
+        device: Optional[Union[str, torch.device]] = None,
+        timesteps: Optional[List[int]] = None,
+        sigmas: Optional[List[float]] = None,
+        **kwargs,
+    ):
+        r"""
+        Calls the scheduler's `set_timesteps` method and retrieves timesteps from the scheduler after the call. Handles
+        custom timesteps. Any kwargs will be supplied to `scheduler.set_timesteps`.
+
+        Args:
+            scheduler (`SchedulerMixin`):
+                The scheduler to get timesteps from.
+            num_inference_steps (`int`):
+                The number of diffusion steps used when generating samples with a pre-trained model. If used, `timesteps`
+                must be `None`.
+            device (`str` or `torch.device`, *optional*):
+                The device to which the timesteps should be moved to. If `None`, the timesteps are not moved.
+            timesteps (`List[int]`, *optional*):
+                Custom timesteps used to override the timestep spacing strategy of the scheduler. If `timesteps` is passed,
+                `num_inference_steps` and `sigmas` must be `None`.
+            sigmas (`List[float]`, *optional*):
+                Custom sigmas used to override the timestep spacing strategy of the scheduler. If `sigmas` is passed,
+                `num_inference_steps` and `timesteps` must be `None`.
+
+        Returns:
+            `Tuple[torch.Tensor, int]`: A tuple where the first element is the timestep schedule from the scheduler and the
+            second element is the number of inference steps.
+        """
+        if timesteps is not None and sigmas is not None:
+            raise ValueError("Only one of `timesteps` or `sigmas` can be passed. Please choose one to set custom values")
+        if timesteps is not None:
+            accepts_timesteps = "timesteps" in set(inspect.signature(scheduler.set_timesteps).parameters.keys())
+            if not accepts_timesteps:
+                raise ValueError(
+                    f"The current scheduler class {scheduler.__class__}'s `set_timesteps` does not support custom"
+                    f" timestep schedules. Please check whether you are using the correct scheduler."
+                )
+            scheduler.set_timesteps(timesteps=timesteps, device=device, **kwargs)
+            timesteps = scheduler.timesteps
+            num_inference_steps = len(timesteps)
+        elif sigmas is not None:
+            accept_sigmas = "sigmas" in set(inspect.signature(scheduler.set_timesteps).parameters.keys())
+            if not accept_sigmas:
+                raise ValueError(
+                    f"The current scheduler class {scheduler.__class__}'s `set_timesteps` does not support custom"
+                    f" sigmas schedules. Please check whether you are using the correct scheduler."
+                )
+            scheduler.set_timesteps(sigmas=sigmas, device=device, **kwargs)
+            timesteps = scheduler.timesteps
+            num_inference_steps = len(timesteps)
+        else:
+            scheduler.set_timesteps(num_inference_steps, device=device, **kwargs)
+            timesteps = scheduler.timesteps
+        return timesteps, num_inference_steps
+
+
 
 # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.retrieve_timesteps
 def retrieve_timesteps(
@@ -188,6 +260,8 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
 
         print(self.vae.config)
         print(self.transformer.config)
+
+    
 
     def _get_t5_prompt_embeds(
         self,
@@ -445,6 +519,17 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
 
         return latents
 
+    def get_timesteps(self, num_inference_steps, strength, device):
+        # get the original timestep using init_timestep
+        init_timestep = min(num_inference_steps * strength, num_inference_steps)
+
+        t_start = int(max(num_inference_steps - init_timestep, 0))
+        timesteps = self.scheduler.timesteps[t_start * self.scheduler.order :]
+        if hasattr(self.scheduler, "set_begin_index"):
+            self.scheduler.set_begin_index(t_start * self.scheduler.order)
+
+        return timesteps, num_inference_steps - t_start
+
     def prepare_latents(
         self,
         batch_size,
@@ -455,6 +540,8 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
         device,
         generator,
         latents=None,
+        image=None,
+        timestep=None,
     ):
         height = 2 * (int(height) // self.vae_scale_factor)
         width = 2 * (int(width) // self.vae_scale_factor)
@@ -470,8 +557,33 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
                 f"You have passed a list of generators of length {len(generator)}, but requested an effective batch"
                 f" size of {batch_size}. Make sure the batch size matches the length of the generators."
             )
+        if image is not None:
+            image=image["samples"]
+            if image.shape[-2] != height or image.shape[-1] != width:
+                image = torch.nn.functional.interpolate(
+                    image, size=(height, width), mode="bilinear", align_corners=False
+                )
+            image_latents = (image - 0.1159) * 0.3611
+            image_latents = image_latents.to(device=device, dtype=dtype)
+            
 
+            #image_latents = self._encode_vae_image(image=image, generator=generator)
+            # if batch_size > image_latents.shape[0] and batch_size % image_latents.shape[0] == 0:
+            #     # expand init_latents for batch_size
+            #     additional_image_per_prompt = batch_size // image_latents.shape[0]
+            #     image_latents = torch.cat([image_latents] * additional_image_per_prompt, dim=0)
+            # elif batch_size > image_latents.shape[0] and batch_size % image_latents.shape[0] != 0:
+            #     raise ValueError(
+            #         f"Cannot duplicate `image` of batch size {image_latents.shape[0]} to {batch_size} text prompts."
+            #     )
+            # else:
+            #     image_latents = torch.cat([image_latents], dim=0)
+        else:
+            image_latents = None
         latents = randn_tensor(shape, generator=generator, device=device, dtype=dtype)
+       
+        if image_latents is not None:
+            latents = self.scheduler.scale_noise(image_latents, timestep, latents)
         latents = self._pack_latents(latents, batch_size, num_channels_latents, height, width)
 
         latent_image_ids = self._prepare_latent_image_ids(batch_size, height, width, device, dtype)
@@ -517,6 +629,9 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
         callback_on_step_end: Optional[Callable[[int, int, Dict], None]] = None,
         callback_on_step_end_tensor_inputs: List[str] = ["latents"],
         max_sequence_length: int = 512,
+        image=None,
+        strength=1.0,
+        sigmas=None,
     ):
         r"""
         Function invoked when calling the pipeline for generation.
@@ -640,41 +755,87 @@ class FluxPipeline(DiffusionPipeline, FluxLoraLoaderMixin):
             pooled_prompt_embeds=pooled_prompt_embeds.to(device,self.transformer.dtype)
             text_ids = torch.zeros(batch_size, prompt_embeds.shape[1], 3).to(device=device, dtype=self.transformer.dtype)
             text_ids = text_ids.repeat(num_images_per_prompt, 1, 1)
-           
-        # 4. Prepare latent variables
-        num_channels_latents = self.transformer.config.in_channels // 4
-        latents, latent_image_ids = self.prepare_latents(
-            batch_size * num_images_per_prompt,
-            num_channels_latents,
-            height,
-            width,
-            prompt_embeds.dtype,
-            device,
-            generator,
-            latents,
-        )
+        if image is  None:   
+            # 4. Prepare latent variables
+            num_channels_latents = self.transformer.config.in_channels // 4
+            
+            latents, latent_image_ids = self.prepare_latents(
+                batch_size * num_images_per_prompt,
+                num_channels_latents,
+                height,
+                width,
+                prompt_embeds.dtype,
+                device,
+                generator,
+                latents,
+            )
 
-        # 5. Prepare timesteps
-        sigmas = np.linspace(1.0, 1 / num_inference_steps, num_inference_steps)
-        image_seq_len = latents.shape[1]
-        mu = calculate_shift(
-            image_seq_len,
-            self.scheduler.config.base_image_seq_len,
-            self.scheduler.config.max_image_seq_len,
-            self.scheduler.config.base_shift,
-            self.scheduler.config.max_shift,
-        )
-        timesteps, num_inference_steps = retrieve_timesteps(
-            self.scheduler,
-            num_inference_steps,
-            device,
-            timesteps,
-            sigmas,
-            mu=mu,
-        )
-        num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
-        self._num_timesteps = len(timesteps)
+            # 5. Prepare timesteps
+            sigmas = np.linspace(1.0, 1 / num_inference_steps, num_inference_steps)
+            image_seq_len = latents.shape[1]
+            mu = calculate_shift(
+                image_seq_len,
+                self.scheduler.config.base_image_seq_len,
+                self.scheduler.config.max_image_seq_len,
+                self.scheduler.config.base_shift,
+                self.scheduler.config.max_shift,
+            )
+            timesteps, num_inference_steps = retrieve_timesteps(
+                self.scheduler,
+                num_inference_steps,
+                device,
+                timesteps,
+                sigmas,
+                mu=mu,
+            )
+            num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
+            self._num_timesteps = len(timesteps)
+        else:
+            # 4.Prepare timesteps
+            sigmas = np.linspace(1.0, 1 / num_inference_steps, num_inference_steps) if sigmas is  None else sigmas
+            image_seq_len = (int(height) // self.vae_scale_factor) * (int(width) // self.vae_scale_factor)
+            mu = calculate_shift_(
+                image_seq_len,
+                self.scheduler.config.get("base_image_seq_len", 256),
+                self.scheduler.config.get("max_image_seq_len", 4096),
+                self.scheduler.config.get("base_shift", 0.5),
+                self.scheduler.config.get("max_shift", 1.15),
+            )
+            timesteps, num_inference_steps = retrieve_timesteps_(
+                self.scheduler,
+                num_inference_steps,
+                device,
+                sigmas=sigmas,
+                mu=mu,
+                )
+            
+            timesteps, num_inference_steps = self.get_timesteps(num_inference_steps, strength, device)
+            
+            if num_inference_steps < 1:
+                raise ValueError(
+                    f"After adjusting the num_inference_steps by strength parameter: {strength}, the number of pipeline"
+                    f"steps is {num_inference_steps} which is < 1 and not appropriate for this pipeline."
+                )
+            latent_timestep = timesteps[:1].repeat(batch_size * num_images_per_prompt)
 
+            # 5. Prepare latent variables
+            num_channels_latents = self.transformer.config.in_channels // 4
+            latents, latent_image_ids = self.prepare_latents(
+                batch_size * num_images_per_prompt,
+                num_channels_latents,
+                height,
+                width,
+                prompt_embeds.dtype,
+                device,
+                generator,
+                latents,
+                image,
+                latent_timestep,
+
+            )
+
+            num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
+            self._num_timesteps = len(timesteps)
         # 6. Denoising loop
         with self.progress_bar(total=num_inference_steps) as progress_bar:
             for i, t in enumerate(timesteps):
