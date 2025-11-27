@@ -30,13 +30,13 @@ def temp_patch_module_attr(module_name: str, attr_name: str, new_obj):
                 delattr(mod, attr_name)
             except Exception:
                 pass
-
-
 def gc_cleanup():
     gc.collect()
     torch.cuda.empty_cache()
 
+
 def load_dit(dit_path,gguf_path,repo,vae_path,cur_directory):
+    pipe=None
     if dit_path is not None or gguf_path is not None:
         assert vae_path is not None,"Please provide a ultraflux vae model"
         local_vae,transformer = load_flux_tansformer(gguf_path,dit_path,vae_path, cur_directory,)
@@ -125,7 +125,7 @@ def load_flux_tansformer(gguf_path,unet_path,vae_path, node_cr_path):
 #     if out_path.exists():
 #         # 文件已经存在，跳过这个 idx
 #         continue
-def inference(pipe, cond,guidance_scale=4, num_inference_steps=50,seed=0,width=4096, height=4096,):
+def inference(pipe, cond,guidance_scale=4, num_inference_steps=50,seed=0,width=4096, height=4096,latent=None,strength=1.0):
 
     image = pipe(
         prompt=None,
@@ -136,7 +136,9 @@ def inference(pipe, cond,guidance_scale=4, num_inference_steps=50,seed=0,width=4
         guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
         max_sequence_length=512,
-        generator=torch.Generator("cpu").manual_seed(seed)
+        generator=torch.Generator("cpu").manual_seed(seed),
+        image=latent,
+        strength=strength,
     ).images[0]
     return image
     #image.save(f"results/ultra_flux_{idx:02d}.jpeg")
